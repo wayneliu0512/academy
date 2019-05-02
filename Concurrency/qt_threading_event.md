@@ -134,7 +134,7 @@ private:
 
 What's the thread affinity of `obj`, `otherObj`, `yetAnotherObj` after we create a MyThread object? We must look at the thread that created them: it's the thread that ran the MyThread constructor. Therefore, all three objects are not living in the MyThread thread, but in the thread that created the MyThread instance (which, by the way, is where the instance is living as well).
 
-![figure_per-thread_event-loop](/images/figure_per-thread_event-loop.PNG)
+![figure_per-thread_event-loop](images/figure_per-thread_event-loop.PNG)
 
 It is very important to understand that QObject and all of its subclasses **are not thread-safe** (although they can be reentrant); therefore, you can not access a QObject from more than one thread at the same time, unless you serialize all accesses to the object's internal data (for instance, by protecting it with a mutex). Remember that the object may be handling events dispatched by the event loop of the thread it is living in while you're accessing it from another thread! For the same reason, you can't delete a QObject from another thread, but you must use `QObject::deleteLater()`, which will post an event that will ultimately cause its deletion by the thread the object is living in.
 
