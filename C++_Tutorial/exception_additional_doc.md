@@ -130,20 +130,11 @@ void f()
 當我們看到一個一般的函式宣告，無法得知該函式可能拋擲什麼異常。然而 "知道函式可能會拋擲什麼異常" 會對正確編寫 `catch` 子句有好處。**異常規格 (exception specification)** 就是用來指示函式是否拋擲異常。
 
 ### 定義一個異常規格 (Exception Specification)
+以下異常規格表示函式不拋擲任何異常:
 
 ```cpp
-void recoup() throw(runtime_error);
+void no_problem() noexcept;
 ```
-
-這告訴我們如果 `recoup()` 拋擲出異常，應該會是個 `runtime_error` 或衍生自 `runtime_error` 的異常。
-
-空白的異常規格表示函式不拋擲任何異常:
-
-```cpp
-void no_problem() throw();
-```
-
-如果函式宣告沒有指明異常規格，那麼該函式可以拋擲任何異常。
 
 ### 違背異常規格
 如果函式拋出一個並未列名於異常規格中的異常，那麼 C++ 標準庫 `unexpected()` 會起而執行，預設情況下會呼叫 `terminate()` 終止程式。
