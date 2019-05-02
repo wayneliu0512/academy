@@ -1,16 +1,16 @@
 # Principles of OOD (Object oriented design)
 
-- [Principles of class design](/SOLID.md):
+- [Principles of class design](SOLID.md):
   - SRP - The Single Responsibility Principle
   - OCP - The Open Closed Principle
   - LSP - The Liskov Substitution Principle
   - ISP - The Interface Segregation Principle
   - DIP - The Dependency Inversion Principle
-- [Principles of package cohesion](/package_cohesion.md):
+- [Principles of package cohesion](package_cohesion.md):
   - REP - The Release Reuse Equivalency Principle
   - CCP - The Common Closure Principle
   - CRP - The Common Reuse Principle
-- [Principles of coupling between packages](/coupling_packages.md):
+- [Principles of coupling between packages](coupling_packages.md):
   - ADP - The Acyclic Dependencies Principle
   - SDP - The Stable Dependencies Principle
   - SAP - The Stable Abstractions Principle
