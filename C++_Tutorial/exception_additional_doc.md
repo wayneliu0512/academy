@@ -145,3 +145,8 @@ void no_problem() noexcept;
 # Qt Exception Safety
 [參考官方文件連結](https://doc.qt.io/qt-5/exceptionsafety.html)
 
+# 常見問題
+[Exception object lifetime](https://stackoverflow.com/questions/12999448/exception-object-lifetime)
+
+[Scope of exception object in C++](https://stackoverflow.com/questions/1654150/scope-of-exception-object-in-c/1654187#1654187)
+
