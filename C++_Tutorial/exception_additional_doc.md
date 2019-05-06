@@ -146,7 +146,9 @@ void no_problem() noexcept;
 [參考官方文件連結](https://doc.qt.io/qt-5/exceptionsafety.html)
 
 # 常見問題
-[Exception object lifetime](https://stackoverflow.com/questions/12999448/exception-object-lifetime)
-
-[Scope of exception object in C++](https://stackoverflow.com/questions/1654150/scope-of-exception-object-in-c/1654187#1654187)
+- [Exceptions and Error Handling FAQ](https://isocpp.org/wiki/faq/exceptions)
+- [Exception object lifetime](https://stackoverflow.com/questions/12999448/exception-object-lifetime)
+- [Scope of exception object in C++](https://stackoverflow.com/questions/1654150/scope-of-exception-object-in-c/1654187#1654187)
+- [What is the purpose of a function try block? - 1](https://stackoverflow.com/questions/14681714/using-new-in-a-member-initializer-list-of-constructor)
+- [What is the purpose of a function try block? - 2](https://stackoverflow.com/questions/8359635/what-is-the-purpose-of-a-function-try-block)
 
