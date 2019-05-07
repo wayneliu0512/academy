@@ -12,9 +12,10 @@
 - [C++ Standard Library](std.md)
 - [Q&A](q&a.md)
 
-## Example Code Repository
+## Example Code Repository on GitLab
 
 - [exception](http://192.168.1.2:30000/wayne_liu/example_exception)
+- [template](http://192.168.1.2:30000/wayne_liu/example_template)
 
 ## Contribution
 
