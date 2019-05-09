@@ -192,7 +192,7 @@ return 0;
 撰寫 template 程式碼時，若能盡量減少 "對引數型別的需求"，將會十分有利。
 
 ## 具現化 (Instantiation)
-Template 是一份藍圖，他本身並非 class 或 function。編譯器會根據 template 產出對應之 class 或 function 的特定版本。為 template 產出一份針對特定目標型別的實體，這個過程便是所謂的巨現化 (instantiation)。
+Template 是一份藍圖，他本身並非 class 或 function。編譯器會根據 template 產出對應之 class 或 function 的特定版本。為 template 產出一份針對特定目標型別的實體，這個過程便是所謂的具現化 (instantiation)。
 
 ### Template 引數推導 (Argument Deduction)
 第一個呼叫式 `compare(1,0)` 的引數型別為 `int`，第二個呼叫式 `compare(3.14, 2.7)` 的引數型別為 `double`。"以函式引數決定 template 引數的型別和值" 的過程稱為 **template 引數推導**
