@@ -9,7 +9,8 @@
 - [Object-Oriented Programming](object_oriented_programming.md)
 - [Exception](exception_additional_doc.md)
 - [Template](template.md)
-- [C++ Standard Library](std.md)
+- C++ Standard Library
+  - [Smart Pointer](smart_pointer.md)
 - [Q&A](q&a.md)
 
 ## Example Code Repository on GitLab
