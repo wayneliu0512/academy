@@ -519,3 +519,7 @@ However, when a QObject (or derived type) is created on the heap without a paren
 2. 如果真的需要使用 pointer 何時該使用 smart pointer 還是該使用 raw pointer ?
    1. smart pointer: 當你的程式碼該掌控這個 pointer 的擁有權時 (ownership)，`new` or `delete`，使用 smart pointer 會是比較好的做法。
    2. raw pointer: 在程式碼裡很多地方是不需要理會 pointer 擁有權 (ownership)， 很典型的例子就是常常在 function 裡面，你只會去使用到某個傳進來的 pointer，而不需要去 `new` 或是 `delete`它，這時候就可以使用 raw pointer。
+
+## FAQ
+- [What's the difference between raw pointer and weak_ptr?](https://stackoverflow.com/questions/16760334/whats-the-difference-between-raw-pointer-and-weak-ptr)
+- [What is Lambda expression?](https://blog.gtwang.org/programming/lambda-expression-in-c11/)
