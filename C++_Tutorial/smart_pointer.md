@@ -2,7 +2,7 @@
 In modern C++ programming, the Standard Library includes smart pointers, which are used to help ensure that programs are free of memory and resource leaks and are exception-safe.
 
 ### Uses for smart pointers
-Smart pointers are defined in the `std` namespace in the `<memory>` header file. They are crucial to the **RAII** or *Resource Acquisition Is Initialization programming* idiom. The main goal of this idiom is to ensure that resource acquisition occurs at the same time that the object is initialized, so that all resources for the object are created and made ready in one line of code. In practical terms, the main principle of RAII is to give ownership of any heap-allocated resource—for example, dynamically-allocated memory or system object handles—to a stack-allocated object whose destructor contains the code to delete or free the resource and also any associated cleanup code.
+Smart pointers are defined in the `std` namespace in the `<memory>` header file. They are crucial to the **[RAII](https://en.cppreference.com/w/cpp/language/raii)** or *Resource Acquisition Is Initialization programming* idiom. The main goal of this idiom is to ensure that resource acquisition occurs at the same time that the object is initialized, so that all resources for the object are created and made ready in one line of code. In practical terms, the main principle of RAII is to give ownership of any heap-allocated resource—for example, dynamically-allocated memory or system object handles—to a stack-allocated object whose destructor contains the code to delete or free the resource and also any associated cleanup code.
 
 In most cases, when you initialize a raw pointer or resource handle to point to an actual resource, pass the pointer to a smart pointer immediately. In modern C++, raw pointers are only used in small code blocks of limited scope, loops, or helper functions where performance is critical and there is no chance of confusion about ownership.
 
@@ -225,14 +225,14 @@ shared_ptr<Song> sp7(nullptr);
 sp1.swap(sp2);
 ```
 
-`shared_ptr` is also helpful in C++ Standard Library containers when you are using algorithms that copy elements. You can wrap elements in a `shared_ptr`, and then copy it into other containers with the understanding that the underlying memory is valid as long as you need it, and no longer. The following example shows how to use the `replace_copy_if` algorithm on `shared_ptr` instances in a vector.
+`shared_ptr` is also helpful in C++ Standard Library containers when you are using algorithms that copy elements. You can wrap elements in a `shared_ptr`, and then copy it into other containers with the understanding that the underlying memory is valid as long as you need it, and no longer. The following example shows how to use the `remove_copy_if` algorithm on `shared_ptr` instances in a vector.
 
 ```cpp
 vector<shared_ptr<Song>> v;
 
 v.push_back(make_shared<Song>(L"Bob Dylan", L"The Times They Are A Changing"));
 v.push_back(make_shared<Song>(L"Aretha Franklin", L"Bridge Over Troubled Water"));
-v.push_back(make_shared<Song>(L"Thal�a", L"Entre El Mar y Una Estrella"));
+v.push_back(make_shared<Song>(L"Thala", L"Entre El Mar y Una Estrella"));
 
 vector<shared_ptr<Song>> v2;
 remove_copy_if(v.begin(), v.end(), back_inserter(v2), [] (shared_ptr<Song> s) 
@@ -244,6 +244,13 @@ for (const auto& s : v2)
 {
     wcout << s->artist << L":" << s->title << endl;
 }
+```
+
+output:
+
+```
+Aretha Franklin:Bridge Over Troubled Water
+Thala:Entre El Mar y Una Estrella
 ```
 
 You can use `dynamic_pointer_cast`, `static_pointer_cast`, and `const_pointer_cast` to cast a `shared_ptr`. These functions resemble the `dynamic_cast`, `static_cast`, and `const_cast` operators. The following example shows how to test the derived type of each element in a vector of `shared_ptr` of base classes, and then copy the elements and display information about them.
@@ -271,6 +278,12 @@ for (const auto&  p : photos)
     // shared_ptr<Photo> objects, so use static_cast.
     wcout << "Photo location: " << (static_pointer_cast<Photo>(p))->location_ << endl;
 }
+```
+
+output:
+
+```
+Photo location: Soccer field at Microsoft.
 ```
 
 ## How to: Create and Use `weak_ptr` Instances
@@ -425,6 +438,61 @@ Press any key
 ```
 
 As an experiment, modify the vector `others` to be a `vector<shared_ptr<Controller>>`, and then in the output, notice that no destructors are invoked when `TestRun` returns.
+
+output:
+
+```
+Creating Controller0
+Creating Controller1
+Creating Controller2
+Creating Controller3
+Creating Controller4
+push_back to v[0]: 1
+push_back to v[0]: 2
+push_back to v[0]: 3
+push_back to v[0]: 4
+push_back to v[1]: 0
+push_back to v[1]: 2
+push_back to v[1]: 3
+push_back to v[1]: 4
+push_back to v[2]: 0
+push_back to v[2]: 1
+push_back to v[2]: 3
+push_back to v[2]: 4
+push_back to v[3]: 0
+push_back to v[3]: 1
+push_back to v[3]: 2
+push_back to v[3]: 4
+push_back to v[4]: 0
+push_back to v[4]: 1
+push_back to v[4]: 2
+push_back to v[4]: 3
+use_count = 5
+Status of 1 = On
+Status of 2 = On
+Status of 3 = On
+Status of 4 = On
+use_count = 5
+Status of 0 = On
+Status of 2 = On
+Status of 3 = On
+Status of 4 = On
+use_count = 5
+Status of 0 = On
+Status of 1 = On
+Status of 3 = On
+Status of 4 = On
+use_count = 5
+Status of 0 = On
+Status of 1 = On
+Status of 2 = On
+Status of 4 = On
+use_count = 5
+Status of 0 = On
+Status of 1 = On
+Status of 2 = On
+Status of 3 = On
+```
 
 ## Qt Smart Pointer
 Because Qt relies on a parent-child model to manage Qobject resources. It follows the composite + Chain-of-responsibility pattern, which is used from event management to memory management, drawing, file handling, etc..
