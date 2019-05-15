@@ -17,6 +17,8 @@
 - Git Internal
   - [Git Object](git_object.md)
   - [Git Reference and Packfiles](git_ref_packfiles.md)
+  - [The Refspec](git_refspec.md)
+  - [Maintenance and Data Recovery](git_maintain_data_recovery.md)
 - [Q&A](q&a.md)
 
 ## Contribution
