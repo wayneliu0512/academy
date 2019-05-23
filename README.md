@@ -10,6 +10,7 @@
 - [Principles of Object-Oriented Design](/principles_of_ood/README.md)
 - [Agile Project Manage](/Agile_Project_Manage/README.md)
 - [Qt](/qt/README.md)
+- [Design Pattern](/design_pattern/README.md)
 
 ## YouTube
 
