@@ -2,7 +2,8 @@
 
 ## 章節
 
-- [Welcome to Design Pattern](welcome_strategy.md)
+- [Welcome to Design Pattern (Strategy pattern)](welcome_strategy.md)
+- [Observer pattern](observer.md)
 
 ## Example Code Repository on Git
 
