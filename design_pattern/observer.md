@@ -126,4 +126,8 @@
 
 ![2_23](images/2_23.PNG)
 
+## C++ 內建支援觀察者模式嗎?
+不支援，但是有些 C++ 函式庫利用觀察者模式實作出所謂 signal / slot 的機制:
 
+- Qt Signal/Slot
+- [Boost.Signals2](https://www.boost.org/doc/libs/1_61_0/doc/html/signals2.html#idp394519184)
