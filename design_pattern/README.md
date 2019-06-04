@@ -4,6 +4,7 @@
 
 - [Welcome to Design Pattern (Strategy pattern)](welcome_strategy.md)
 - [Observer pattern](observer.md)
+- [Decorator pattern](decorator.md)
 
 ## Example Code Repository on Git
 
