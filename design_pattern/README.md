@@ -5,6 +5,8 @@
 - [Welcome to Design Pattern (Strategy pattern)](welcome_strategy.md)
 - [Observer pattern](observer.md)
 - [Decorator pattern](decorator.md)
+- [Factory pattern](factory.md)
+- [Singleton pattern](singleton.md)
 
 ## Example Code Repository on Git
 
