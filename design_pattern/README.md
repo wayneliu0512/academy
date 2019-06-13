@@ -7,6 +7,7 @@
 - [Decorator pattern](decorator.md)
 - [Factory pattern](factory.md)
 - [Singleton pattern](singleton.md)
+- [Command pattern](command.md)
 
 ## Example Code Repository on Git
 
