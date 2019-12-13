@@ -12,6 +12,7 @@
 - C++ Standard Library
   - [Smart Pointer](smart_pointer.md)
 - [Q&A](q&a.md)
+- [Effective C++, 55 Specific Ways to Improve Your Programs and Designs](effective_cpp.md)
 
 ## Example Code Repository on GitLab
 
