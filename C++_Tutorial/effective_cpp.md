@@ -46,7 +46,7 @@ The second special case concerns class-specific constants. To limit the scope of
 class CostEstimate{
 private:
     static const double FudgeFactor; // declaration; goes in header file
-	...
+    ...
 };
     
 const double CostEstimate::FudgeFactor = 1.35; //definition; goes in impl. file
@@ -57,10 +57,10 @@ There is a exception when you need the value of a class constant during compilat
 ```cpp
 class GamePlayer {
 private:
-	enum {NumTurns = 5}; // enum class is better.
+    enum {NumTurns = 5}; // enum class is better.
 
-	int scores[NumTurns];
-	...
+    int scores[NumTurns];
+    ...
 };
 ``` 
 
@@ -84,7 +84,7 @@ The solution is:
 template<typename T>   // template <class T>
 inline void CallWithMax(const T &a, const T &b)
 {
-	f(a > b ? a : b);
+    f(a > b ? a : b);
 }
 ```
 
@@ -135,14 +135,14 @@ The purpose of `const` on member functions is to identify which member functions
 ```cpp
 class TextBlock {
 public:
-	...
-	const char& operator[](const std::size_t position) const // operator[] for
-	{ return text[position]; }                               // const objects
-	char& operator[](const std::size_t position)             // operator[] for
-	{ return text[position]; }                               // non-const objects
+    ...
+    const char& operator[](const std::size_t position) const // operator[] for
+    { return text[position]; }                               // const objects
+    char& operator[](const std::size_t position)             // operator[] for
+    { return text[position]; }                               // non-const objects
     
 private:
-	std::string text;
+    std::string text;
 };
 ```
 
@@ -161,8 +161,8 @@ Incidentally, `const` objects most often arise in real programs as a result of b
 ```cpp
 void print(const TextBlock& ctb)  // in this function, ctb is const
 {
-	std::cout << ctb[0];            // call const TextBlock::operator[]
-	...
+    std::cout << ctb[0];            // call const TextBlock::operator[]
+    ...
 }
 ```
 
