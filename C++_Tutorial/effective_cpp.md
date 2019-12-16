@@ -92,3 +92,85 @@ inline void CallWithMax(const T &a, const T &b)
 
 - For simple constants, prefer `const` objects or `enum` to `#define`.
 - For function-like macros, prefer inline functions to `#define`.
+
+## 3. Use `const` whenever possible.
+
+The wonderful thing about `const` is that it allows you to specify a semantic constraint - a particular object should not be modified - and compilers will enforce that constraint.
+
+這個章節希望大家盡可能的使用 `const`, 所以前半部很多內容是在複習 `const` 的作用, 這部分我就只用 sample code 帶過, 大家也順便複習一下, 看是不是知道這些 `const` 的用法以及差異, 如果有不懂的地方可以提出來.
+
+```cpp
+char greeting[] = "Hello";
+char *p = greeting;              // non-const pointer,
+    							 // non-const data
+const char *p = greeting;        // non-const pointer,
+								 // const data
+char * const p = greeting;       // const pointer,
+                                 // non-const data
+const char * const p = greeting; // const pointer, 
+    							 // const data
+```
+
+```cpp
+void f1(const Widget *pw); // f1 takes a pointer to a constant Widget object
+void f2(Widget const *pw); // so does f2
+```
+
+```cpp
+std::vector<int> vec;
+...
+const std::vector<int>::iterator iter = vec.begin(); // iter acts like a T* const
+*iter = 10;                                          // OK, changes what iter points to
+++iter;                                              // error! iter is const
+    
+std::vector<int>::const_iterator c_iter = vec.begin(); // c_iter acts like a const T*
+*c_iter = 10;                                          // error! *c_iter is const
+++c_iter;                                              // fine, changes c_iter
+```
+
+### `const` Member Functions
+
+The purpose of `const` on member functions is to identify which member functions may be invoked on `const` objects. Such member functions are important for two reasons. First, they make the interface of a class easier to understand. It's important to know which functions may modify an object and which may not. Seconds, they make it possible to work with `const` objects. That's a critical aspect of writing efficient code, because, as Item 20 explains, one of the fundamental ways to improve a C++ program's performance is to pass objects by reference-to-const.
+
+```cpp
+class TextBlock {
+public:
+	...
+	const char& operator[](const std::size_t position) const // operator[] for
+	{ return text[position]; }                               // const objects
+	char& operator[](const std::size_t position)             // operator[] for
+	{ return text[position]; }                               // non-const objects
+    
+private:
+	std::string text;
+};
+```
+
+`TextBlock` 's `operator[]` s can be used like this:
+
+```cpp
+TextBlock tb("Hello");
+std::cout << tb[0];           // calls non-const TextBlock::operator[]
+    
+const TextBlock ctb("World");
+std::cout << ctb[0];          // calls const TextBlock::operator[]
+```
+
+Incidentally, `const` objects most often arise in real programs as a result of being passed by pointer- or reference-to-const.
+
+```cpp
+void print(const TextBlock& ctb)  // in this function, ctb is const
+{
+	std::cout << ctb[0];            // call const TextBlock::operator[]
+	...
+}
+```
+
+By overloading `operator[]` and giving the different versions different return types, you can have `const` and non- `const` `TextBlock` s handled differently:
+
+```cpp
+std::cout << tb[0];  // fine - reading a non-const TextBlock
+tb[0] = 'x';         // fine - writing a non-const TextBlock
+std::cout << ctb[0]; // fine - reading a const TextBlock
+ctb[0] = 'x';        // error! - writing a const TextBlock
+```
