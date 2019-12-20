@@ -174,3 +174,46 @@ tb[0] = 'x';         // fine - writing a non-const TextBlock
 std::cout << ctb[0]; // fine - reading a const TextBlock
 ctb[0] = 'x';        // error! - writing a const TextBlock
 ```
+
+Sometimes `const` member function might modify some of the bits in the object on which it's invoked, but only in ways that clients cannot detect. For example, your `CTextBlock` class might want to cache the length of the textbook whenever it's requested:
+
+```cpp
+class CTextBlock {
+public:
+    ...
+    std::size_t length() const;
+
+private:
+    char *pText;
+    std::size_t textLength;  // last calculated length of textblock
+    bool lengthIsValid;      // whether length is currently valid
+}
+
+std::size_t CTextBlock::length() const
+{
+    if (!lengthIsValid) {
+        textLength = std::strlen(pText); // error! can't assign to textLength and lengthIsValid in a const member function
+        lengthIsValid = true;
+    }
+
+    return textLength;
+}
+```
+
+This implementation of `length` is certainly not bitwise `const` - both `textLength` and `lengthIsValid` may be modified. Compilers disagree. They insist on bitwise constness. What to do?
+
+The solution is simple: take advantage of C++'s `const`-related wiggle room known as `mutable`. `mutable` frees non-static data members from the constraints of bitwise constness:
+
+```cpp
+class CTextBlock {
+public:
+    ...
+    std::size_t length() const;
+
+private:
+    char *pText;
+    mutable std::size_t textLength;  // these data members may
+    mutable bool lengthIsValid;      // always be modified, even
+                                     // in const member function
+}
+```
