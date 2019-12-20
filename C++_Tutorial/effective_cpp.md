@@ -217,3 +217,67 @@ private:
                                      // in const member function
 }
 ```
+
+### Avoiding Duplication in `const` and Non-`const` Member Functions
+
+For example, suppose that `operator[]` in `TextBlock` not only returned a reference to the appropriate character, it also performed bounds checking, logged access information, maybe even did data integrity validation. Putting all this in both the `const` and the non-`const` `operator[]` functions yields this kind of monstrosity:
+
+```cpp
+class TextBlock {
+public:
+    ...
+    const char& operator[](const std::size_t position) const
+    {
+        ... // do bounds checking
+        ... // log access data
+        ... // verify data integrity
+        return text[position];
+    }
+
+    char& operator[](const std::size_t position)
+    {
+        ... // do bounds checking
+        ... // log access data
+        ... // verify data integrity
+        return text[position];
+    }
+
+private:
+    std::string text;
+};
+```
+
+Ouch! Can you say code duplication, along with its attendant compilation time, maintenance, and code-bloat headaches? Sure, So what you really want to do is implement `operator[]` functionality once and use it twice. That is, you want to have one version of `operator[]` call the other one. And that bring us to casting away constness.
+
+```cpp
+class TextBlock {
+public:
+    ...
+    const char& operator[](const std::size_t position) const // same as before
+    {
+        ... 
+        ... 
+        ... 
+        return text[position];
+    }
+
+    char& operator[](const std::size_t position)
+    {
+        return 
+          const_cast<char&>(                     // cast away const on op[]'s return type;
+            static_cast<const TextBlock&>(*this) // add const to *this's type;
+              [position]                         // call const version of op[]
+        );
+        
+    }
+
+private:
+    std::string text;
+};
+```
+
+**Things to Remember**
+
+- Declaring something `const` helps compilers detect usage errors. `const` can be applied to objects at any scope, to function parameters and return types, and to member functions as a whole.
+- Compilers enforce bitwise constness, but you should program using logical constness.
+- When `const` and non-`const` member functions have essentially identical implementations, code duplication can be avoided by having the non-`const` version call the `const` version.  
