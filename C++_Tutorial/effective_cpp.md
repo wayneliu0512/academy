@@ -463,3 +463,89 @@ Faced with this conundrum, C++ refuse to compile the code. If you want to suppor
 - Compilers may implicitly generate a class's default constructor, copy constructor, copy assignment operator, and destructor.
 
 ## 6. Explicitly disallow the use of compiler-generated functions you do not want.
+
+這邊書是以房產做舉例, 假設我們把房產寫成一個類:
+
+```cpp
+class HomeForSale{...};
+```
+
+我們可以知道現實中任何一個房產都是獨一無二的, 如果它可以複製, 那肯定是不合理的, 所以對於以下情況, 我們應該讓它編譯失敗:
+
+```cpp
+HomeForSale h1;
+HomeForSale h2;
+HomeForSale h3(h1);  // attempt to copy h1 - should not compile!
+
+h1 = h2              // attempt to copy h2 - should not compile!
+```
+
+然而要作到這樣的效果並不直觀, 通常我們直覺會認為如果我們不想要一個 function 的功能, 我們只要不宣告這個 function 就好了, 但這個作法在 copy constructor, copy assignment operator 不管用, 因為根據第 5 點我們提到, 如果你不宣告, compiler 會幫你自動宣告.
+
+所以如果我們要解決這個問題, 可以用以下方法:
+
+```cpp
+class HomeForSale{
+public:
+    ...
+    HomeForSale(const HomeForSale&) = delete;
+    HomeForSale& operator=(const HomeForSale&) = delete;
+};
+```
+
+**Things to Remember**
+
+- To disallow functionality automatically provided by compilers, declare the corresponding member functions `= delete` and give no implementations.
+
+## 7. Declare destructors virtual in polymorphic base classes.
+
+There are lots of ways to keep track of time, so it would be resonable to create a `TimeKeeper` base class along with derived classes for different approaches to timekeeping:
+
+```cpp
+class TimeKeeper {
+public:
+    TimeKeeper();
+    ~TimeKeeper();
+    ...
+};
+
+class AtomicClock: public TimeKeeper {...};
+class WaterClock: public TimeKeeper {...};
+class WristWatch: public TimeKeeper {...};
+```
+
+Many clients will want access to the time without worrying about the details of how it's calculated, so a factory function - a function that return a base class pointer to a newly-created derived class object - can be used to return a pointer to a timekeeping object:
+
+```cpp
+TimeKeeper *getTimeKeeper(); // returns a pointer to a dynamically allocated object of a class derived from TimeKeeper
+```
+
+Consider next situation:
+
+```cpp
+TimeKeeper *ptk = getTimeKeeper(); // get dynamically allocated object from TimeKeeper hierachy
+...                                // use it
+delete ptk;                        // release it to avoid resource leak
+```
+
+The problem is that `getTimeKeeper` returns a pointer to a derived class object(e.g. `AtomClock`), that object is being deleted via a base class pointer(i.e., a `TimeKeeper*` pointer), and the base class (`TimeKeeper`) has a non-virtual destructor. This is a recipe for disaster, result are undefined. What typically  happens at runtime is that the derived part of the object is never destroyed.
+
+Eliminating the problem is simple: give the base class a virtual destructor. Then deleting the derived class object will do exactly what you want. It will destory the entire object, including all its derived class parts:
+
+```cpp
+class TimeKeeper{
+public:
+    TimeKeeper();
+    virtual ~TimeKeeper();
+    ...
+};
+TimeKeeper *ptk = getTimeKeeper();
+...
+delete ptk;
+```
+
+**Things to Remember**
+
+- Polymorphic base classes should declare virtual destructors. If a class has any virtual functions, it should have a virtual destructor.
+- Classes not designed to be base classes or not designed to be used polymorphically should not declare virtual destructors.
+
