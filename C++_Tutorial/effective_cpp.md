@@ -281,3 +281,185 @@ private:
 - Declaring something `const` helps compilers detect usage errors. `const` can be applied to objects at any scope, to function parameters and return types, and to member functions as a whole.
 - Compilers enforce bitwise constness, but you should program using logical constness.
 - When `const` and non-`const` member functions have essentially identical implementations, code duplication can be avoided by having the non-`const` version call the `const` version.  
+
+## 4. Make sure that objects are initialized before they're used.
+
+C++ can seem rather fickle about initializing the values of objects. For example, if you say this,
+
+```cpp
+int x;
+```
+
+in some constexts, `x` is guaranteed to be initialized(to zero), but in others, it's not. If you say this,
+
+```cpp
+class Point {
+    int x, y
+}
+...
+Point p;
+```
+
+`p`'s data members are sometimes guaranteed to be initialized(to zero), but sometimes they're not. Reading uninitialized values yields undefined behavior.
+
+Now, there are rules that describe when object initialization is guaranteed to take place and when it isn't. Unfortunately, the rules are complicated - too complicated to be memorizing.
+
+The best way to deal with this seemingly indeterminate state of affairs is to *always* initialize your objects before you use them.
+
+```cpp
+int x = 0;                             // manual initialization of an int
+const char *text = "A C-style string"; // manual initialization of a pointer
+
+double d;                              // "initialization" by 
+std::cin >> d;                         // reading from an input stream
+```
+
+For almost everything else, the responsibility for initialization falls on constructors. The rule there is simple: make sure that all constructors initialize everything in the object.
+
+The rule is easy to follow, but it's important not to confuse assignment with initialization.
+
+```cpp
+class PhoneNumber {...};
+
+class ABEntry{   // ABEntry = "Address Book Entry"
+public:
+    ABEntry(const std::string& name, const std::string &address,
+            const std::list<PhoneNumber>& phone);
+
+private:
+    std::string theName;
+    std::string theAddress;
+    std::list<PhoneNumber> thePhones;
+    int numTimesConsulted;
+};
+
+ABEntry::ABEntry(const std::string& name, const std::string &address,
+                 const std::list<PhoneNumber>& phone)
+{
+    theName = name;        // these are all assignments,
+    theAddress = address;  // not initializations
+    thePhones = phones;
+    numTimesConsulted = 0;
+}
+```
+
+This will yield `ABEntry` objects with the values you expect, but it's still not the best approach. They aren't being initialized, they're being assigned. Initialization took place earlier.
+
+A better way to write the `ABEntry` constructor is to use the member initialization list instead of assignments:
+
+```cpp
+ABEntry::ABEntry(const std::string& name, const std::string &address,
+                 const std::list<PhoneNumber>& phone)
+: theName(name),
+  theAddress(address),   // these are now all initializations
+  thePhones(phones),
+  numTimesConsulted(0)
+{}
+```
+
+Sometimes the initialization list must be used, even for built-in types. For example, data member that are `const` or are references must be initialized. They cant't be assigned.
+
+One aspect of C++ that isn't fickle is the order in which an object's data is initialized. This order is always the same: base classes are initialized before derived classes, and within a class, data members are initialized in the order in which they are declared. This is true even if they are listed in a different order on the member initialization list. To avoid reader confusion, always list members in the initialization list in the same order as they're declared in the class.
+
+**Things to Remember**
+
+- Manually initialize objects of built-in type, because C++ only sometimes initializes them itself.
+- In a constructor, prefer use of the member initialization list to assignment inside the body of the constructor. List data members in the initialization list in the same order ther're declared in the class.
+- Avoid initialization order problem across translation units by replacing non-local statics objects with local static objects.
+
+## 5. Know what function C++ silently writes and calls.
+
+When is an empty class not an empty class? When C++ gets through with it. If you don't declare them yourself, compiler will declare their own versions of a copy constructor, a copy assignment operator, and a destructor. As a result, if you write 
+
+```cpp
+class Empty{};
+```
+
+it's essentially the same as if you'd written this:
+
+```cpp
+class Empty{
+public:
+    Empty(){...}                  // default constructor
+    Empty(const Empty& rhs){...}  // copy constructor
+    ~Empty(){...}                 // destructor
+
+    Empty& operator=(const Empty& rhs){...} // copy assignment operator
+};
+```
+
+These functions are generated only if they are needed. The following code will cause each function to be generated:
+
+```cpp
+Empty e1;     // default constructor
+              // destructor
+Empty e2(e1); // copy constructor
+e2 = e1;      // copy assignment operator
+```
+
+Let's consider next example:
+
+```cpp
+template<typename T>
+class NamedObject {
+public:
+    NamedObject(const char *name, const T &value);
+    NamedObject(const std::string &name, const T &value);
+    ...
+
+private:
+    std::string nameValue;
+    T objectValue;
+}
+```
+
+Because a constructor is declared in `NamedObject`, compilers won't generate a default constructor. This is important.
+
+`NamedObject` declares neither copy constructor nor copy assignment operator. so compilers will generate those functions. Look, then, at this use of the copy constructor:
+
+```cpp
+NamedObject<int> no1("Small prime number", 2);
+NamedObject<int> no2(no1);  // calls copy constructor
+```
+
+The copy constructor generated by compilers must initialize `no2.nameValue` and `no2.objectValue` using `no1.nameValue` and `no1.objectValue`, respectively. The type of `nameValue` is `string`, so `no2.nameValue` will be initialized by calling the `string` copy constructor with `no1.nameValue` as its argument. On the other hand, `int` is a built-in type, so `no2.objectValue` will be initialized by copying the bits in `no1.objectValue`.
+
+The compiler-generated copy assignment operator for `NameObject<int>` would behave essentially the same way.
+
+Next example, suppose `NameObject` were defined like this, where `nameValue` is a reference to a string and `objectValue` is a `const T`:
+
+```cpp
+template<typename T>
+class NamedObject {
+public:
+    NamedObject(const std::string &name, const T &value);
+    ...
+
+private:
+    std::string &nameValue; // this is now a reference
+    const T objectValue;    // this is now const
+}
+```
+
+Now consider what should happen here:
+
+```cpp
+std::string newDog("Persephone");
+std::string oldDog("Satch");
+
+NameObject<int> p (newDog, 2);
+
+NameObject<int> s (oldDog, 36);
+
+p = s;  // what should happen to the data members in p ?
+```
+
+After the assignment, should `p.nameValue` refer to the `string` referred to by `s.nameValue`. Should the reference itself be modified? If so, that breaks new ground, because C++ doesn't provide a way to make a reference refer to a different object.
+
+Faced with this conundrum, C++ refuse to compile the code. If you want to support copy assignment in a class containing a reference member, you must define the copy assignment operator yourself. Compilers behave similarly for classes containing `const` members.
+
+**Things to Remember**
+
+- Compilers may implicitly generate a class's default constructor, copy constructor, copy assignment operator, and destructor.
+
+## 6. Explicitly disallow the use of compiler-generated functions you do not want.
