@@ -97,7 +97,7 @@ inline void CallWithMax(const T &a, const T &b)
 
 The wonderful thing about `const` is that it allows you to specify a semantic constraint - a particular object should not be modified - and compilers will enforce that constraint.
 
-這個章節希望大家盡可能的使用 `const`, 所以前半部很多內容是在複習 `const` 的作用, 這部分我就只用 sample code 帶過, 大家也順便複習一下, 看是不是知道這些 `const` 的用法以及差異, 如果有不懂的地方可以提出來.
+這個章節希望大家每當有可能就使用 `const`, 所以前半部很多內容是在複習 `const` 的作用, 這部分我就只用 sample code 帶過, 大家也順便複習一下, 看是不是知道這些 `const` 的用法以及差異, 如果有不懂的地方可以提出來.
 
 ```cpp
 char greeting[] = "Hello";
