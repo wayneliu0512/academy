@@ -549,3 +549,95 @@ delete ptk;
 - Polymorphic base classes should declare virtual destructors. If a class has any virtual functions, it should have a virtual destructor.
 - Classes not designed to be base classes or not designed to be used polymorphically should not declare virtual destructors.
 
+## 8. Prevent exceptions from leaving destructors.
+
+Consider:
+
+```cpp
+class Widget{
+public:
+    ...
+    ~Widget(){...}  // assume this might emit an exception
+};
+
+void doSomething()
+{
+    std::vector<Widget> v;
+}   // v is automatically destroyed here
+```
+
+When the `vector v` is destroyed, suppose `v` has ten `Widget`s in it, and during destruction of the first one, an exception is thrown. The other nine `Widget`s still have to be destroyed, so `v` should invoke their destructors. But suppose that during those calls, a second `Widget` destructor throws an exception. Now there are two simultaneously active exceptions, and that's one too many for C++. Program execution either terminates or yields undefined behavior.
+
+That's easy enough to understand, but what should you do if your destructor needs to perform an operation that may fail by throwing an exception? For example:
+
+```cpp
+class DBConnection{
+public:
+    ...
+    static DBConnection create();
+
+    void close(); // close connection; throw an exception if closing fails
+};
+```
+
+To ensure that clients don't forget to call `close` on `DBConnetion` objects, a reasonable idea would be create a resourse-managing class for `DBConnection` that calls `close` in its destructor.
+
+```cpp
+class DBConn {
+public:
+    ...
+    ~DBConn()
+    {
+        db.close();
+    }
+private:
+    DBConnection db;
+};
+```
+
+That allows clients to program like this:
+
+```cpp
+{
+    DBConn dbc(DBConnection::create());
+    ...
+
+} // at the end of block, the DBConn object is destroyed, thus automatically calling close on the DBConnection object
+```
+
+If destructor yields an exception, allow it to leave the destructor. That's a problem.
+
+There are two primary ways to avoid the trouble:
+
+- **Terminate the program** if `close` throws, typically by calling `abort`:
+
+    ```cpp
+    DBConn::~DBConn()
+    {
+        try{ db.close(); }
+        catch(...){
+            // make log entry that the call to close failed;
+            std::abort();
+        }
+    }
+    ```
+
+- **Swallow the exception** arising from the call to `close`:
+
+    ```cpp
+    DBConn::~DBConn()
+    {
+        try{ db.close(); }
+        catch(...){
+            // make log entry that the call to close failed;
+        }
+    }
+    ```
+
+    In general, swallowing exception is a bad idea, because it suppresses important information. Sometimes, however, swallowing exception is preferable to running the risk of premature program termination or undefined behavior.
+
+**Things to Remember**
+
+- Destructors should never emit exceptions. If functions called in a destructor may throw, the destructor should catch any exceptions, then swallow them or terminate the program.
+- If class clients need to be able to react to exceptions thrown during an operation, the class should provide a regular function that performs the operation.
+
