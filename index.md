@@ -1,5 +1,3 @@
-# Acadamy
-
 ![keeplearning](/images/keeplearning.png)
 
 ## 章節
