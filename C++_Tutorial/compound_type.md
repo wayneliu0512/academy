@@ -173,3 +173,4 @@ if (*curErr) {
     *curErr = 0; // 沒問題: 重設 curErr 所綁定的物件值
 }
 ```
+補充：可以藉由 `const` 在 `*` 左邊還是右邊來分辨是 `const` pointer 還是 pointer to `const`
