@@ -31,3 +31,4 @@
 
 - test 執行時, log 訊息會失效, 只有 WARN level 以上才會 print 出來, /rosout 則全部都不會被 publish 參考[這個](https://answers.ros.org/question/350204/do-rostest-test-nodes-publish-to-rosout/)
 - 若要執行 gtest , 可以直接執行 `.../devel/.private/<pkg>/lib/<pkg>/<test_program>`
+- [What is Mocking in Unit test](https://stackoverflow.com/questions/3622455/what-is-the-purpose-of-mock-objects)
