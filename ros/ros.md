@@ -14,7 +14,7 @@
     這用個指令 build:
 
     ```bash
-    $ catkin build <pkg> --catkin-make-args run_tests
+    $ catkin build <pkg> --catkin-make-args tests
     ```
 
     用這個指令執行:
