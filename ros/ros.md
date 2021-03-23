@@ -17,7 +17,7 @@
     $ catkin build <pkg> --catkin-make-args tests
     ```
 
-    用這個指令執行:
+    用這個指令執行(這其實是 build + execute):
 
     ```bash
     $ catkin run_tests <pkg>
